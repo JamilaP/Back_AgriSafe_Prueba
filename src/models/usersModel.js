@@ -1,11 +1,7 @@
 const db = require('../config/db');
 
-exports.findAll = () => {
-    return db.query('SELECT * FROM users');
-};
-
-exports.findById = (id) => {
-    return db.query('SELECT * FROM users WHERE user_id = ?', [id]);
+exports.findByEmail = (email) => {
+    return db.query('SELECT * FROM users WHERE email = ?', [email]);
 };
 
 exports.createUser = async (user) => {
@@ -14,4 +10,12 @@ exports.createUser = async (user) => {
         user.email,
         user.password
     ]);
+};
+
+exports.findAll = () => {
+    return db.query('SELECT * FROM users');
+};
+
+exports.findById = (id) => {
+    return db.query('SELECT * FROM users WHERE user_id = ?', [id]);
 };
