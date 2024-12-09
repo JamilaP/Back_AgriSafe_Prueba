@@ -9,5 +9,7 @@ router.use(verifyToken);
 router.get('/', usersController.getAllUsers);
 router.get('/:id', usersController.getUserById);
 router.post('/', usersController.createUser);
+router.get('/profile', usersController.getUserProfile);
+router.put('/profile', upload.single('profile_picture'), usersController.updateUserProfile);
 
 module.exports = router;

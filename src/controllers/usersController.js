@@ -72,37 +72,43 @@ exports.protectedEndpoint = (req, res) => {
     }
 };
 
-exports.getAllUsers = async (req, res) => {
+// Obtener datos del usuario logeado
+exports.getUserProfile = async (req, res) => {
     try {
-        const [users] = await usersModel.findAll();
-        res.status(200).json(users);
-    } catch (err) {
-        res.status(500).json({ error: 'Error al obtener los usuarios' });
-    }
-};
-
-exports.getUserById = async (req, res) => {
-    try {
-        const { id } = req.params; 
-        const [user] = await usersModel.findById(id); 
+        const userId = req.user.user_id; // ID del usuario desde el token JWT
+        const [user] = await usersModel.findById(userId);
 
         if (!user.length) {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
-        res.status(200).json(user[0]);
+        res.status(200).json(user[0]); // Devuelve el perfil del usuario
     } catch (err) {
-        res.status(500).json({ error: 'Error al obtener el usuario' });
+        console.error(err);
+        res.status(500).json({ error: 'Error al obtener los datos del usuario' });
     }
 };
 
-/*
-exports.createUser = async (req, res) => {
+// Actualizar nombre e imagen del perfil del usuario
+exports.updateUserProfile = async (req, res) => {
     try {
-        const user = req.body;
-        await usersModel.createUser(user);
-        res.status(201).json({ message: 'Usuario creado con éxito' });
+        const userId = req.user.user_id; // ID del usuario desde el token JWT
+        const { name } = req.body;
+        const profilePicture = req.file ? req.file.location : null; // URL pública de la imagen subida a OBS
+
+        if (!name && !profilePicture) {
+            return res.status(400).json({ error: 'No se proporcionaron datos para actualizar' });
+        }
+
+        // Actualizar los datos en la base de datos
+        await usersModel.updateProfile(userId, name, profilePicture);
+
+        res.status(200).json({
+            message: 'Perfil actualizado con éxito',
+            profilePicture,
+        });
     } catch (err) {
-        res.status(500).json({ error: 'Error al crear el usuario' });
+        console.error(err);
+        res.status(500).json({ error: 'Error al actualizar el perfil' });
     }
-};*/
+};

@@ -12,10 +12,13 @@ exports.createUser = async (user) => {
     ]);
 };
 
-exports.findAll = () => {
-    return db.query('SELECT * FROM users');
-};
-
 exports.findById = (id) => {
     return db.query('SELECT * FROM users WHERE user_id = ?', [id]);
+};
+
+exports.updateProfile = (id, name, profilePicture) => {
+    return db.query(
+        'UPDATE users SET name = ?, profile_picture = ? WHERE user_id = ?',
+        [name, profilePicture, id]
+    );
 };
