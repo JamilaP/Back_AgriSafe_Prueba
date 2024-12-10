@@ -93,22 +93,25 @@ exports.getUserProfile = async (req, res) => {
 exports.updateUserProfile = async (req, res) => {
     try {
         const userId = req.user.user_id; // ID del usuario desde el token JWT
-        const { name } = req.body;
-        const profilePicture = req.file ? req.file.location : null; // URL pública de la imagen subida a OBS
+        const { name } = req.body; // Nombre enviado en la solicitud
+        const profilePicture = req.file ? req.file.location : null; // URL pública de la imagen
 
+        // Validar que al menos uno de los campos esté presente
         if (!name && !profilePicture) {
             return res.status(400).json({ error: 'No se proporcionaron datos para actualizar' });
         }
+
+        console.log('Datos a actualizar:', { name, profilePicture });
 
         // Actualizar los datos en la base de datos
         await usersModel.updateProfile(userId, name, profilePicture);
 
         res.status(200).json({
             message: 'Perfil actualizado con éxito',
-            profilePicture,
+            profilePicture: profilePicture || 'No actualizado',
         });
     } catch (err) {
-        console.error(err);
+        console.error('Error al actualizar el perfil:', err);
         res.status(500).json({ error: 'Error al actualizar el perfil' });
     }
 };
