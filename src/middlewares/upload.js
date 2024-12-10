@@ -1,10 +1,11 @@
 const AWS = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
+require('dotenv').config();
 
 // Configuración de OBS (Huawei Cloud)
 const s3 = new AWS.S3({
-    endpoint: new AWS.Endpoint('https://obs.<region>.myhuaweicloud.com'), // Endpoint de OBS
+    endpoint: new AWS.Endpoint(process.env.OBS_ENDPOINT), // Endpoint de OBS
     accessKeyId: process.env.OBS_ACCESS_KEY_ID, // Credenciales desde .env
     secretAccessKey: process.env.OBS_SECRET_ACCESS_KEY, // Credenciales desde .env
     s3ForcePathStyle: true, // Obligatorio para OBS
