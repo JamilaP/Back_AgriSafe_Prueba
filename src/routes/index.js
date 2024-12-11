@@ -5,12 +5,12 @@ const router = express.Router();
 const authRouter = require('./authRouter'); 
 const usersRouter = require('./usersRouter'); 
 const plantsRouter = require('./plantsRouter');
-//const diagnosesRouter = require('./diagnosesRouter');
+const diagnosesRouter = require('./diagnosesRouter');
 
-// Asociar rutas a la API 
+// Asociar rutas a la API
 router.use('/auth', authRouter);
 router.use('/users', usersRouter);
 router.use('/plants', plantsRouter);
-//router.use('/diagnoses', diagnosesRouter);
+router.use('/diagnoses', diagnosesRouter);
 
 module.exports = router;
