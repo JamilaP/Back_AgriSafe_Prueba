@@ -24,5 +24,5 @@ exports.updateProfile = async (userId, name, profilePicture) => {
             profile_picture = COALESCE(?, profile_picture)
         WHERE user_id = ?
     `;
-    return db.query(query, [name, profilePicture, userId]);
+    return db.query(query, [name || null, profilePicture || null, userId]);
 };

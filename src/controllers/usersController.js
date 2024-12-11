@@ -91,17 +91,20 @@ exports.getUserProfile = async (req, res) => {
 
 // Actualizar nombre e imagen del perfil del usuario
 exports.updateUserProfile = async (req, res) => {
+    console.log('Datos del usuario:', req.user);
     try {
-        const userId = req.user.user_id; // ID del usuario desde el token JWT
-        const { name } = req.body; // Nombre enviado en la solicitud
-        const profilePicture = req.file ? req.file.location : null; // URL pública de la imagen
+        const userId = req.user.user_id; 
+        const { name } = req.body; 
+        const profilePicture = req.file ? req.file.location : null; 
+
+        // Logs para depuración
+        console.log('Nombre recibido:', name);
+        console.log('Archivo recibido:', req.file);
 
         // Validar que al menos uno de los campos esté presente
         if (!name && !profilePicture) {
             return res.status(400).json({ error: 'No se proporcionaron datos para actualizar' });
         }
-
-        console.log('Datos a actualizar:', { name, profilePicture });
 
         // Actualizar los datos en la base de datos
         await usersModel.updateProfile(userId, name, profilePicture);
