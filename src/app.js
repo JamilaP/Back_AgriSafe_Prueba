@@ -8,9 +8,10 @@ const app = express();
 
 // Configuración de CORS
 const corsOptions = {
-  origin: process.env.CLIENT_ORIGIN || 'http://192.168.18.221:8081',
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -30,5 +31,5 @@ app.use((err, req, res, next) => {
 // Iniciar el servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor corriendo en http://host:${PORT}`);
 });
