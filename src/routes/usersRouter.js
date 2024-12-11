@@ -4,7 +4,7 @@ const { verifyToken } = require('../middlewares/auth');
 const usersController = require('../controllers/usersController');
 const upload = require('../middlewares/upload');
 
-router.use(verifyToken);
+//router.use(verifyToken);
 
 //rutas privadas
 router.get('/:id', usersController.getUserProfile);
@@ -13,5 +13,3 @@ router.get('/profile', usersController.getUserProfile);
 router.put('/profile', upload.single('profile_picture'), usersController.updateUserProfile);
 
 module.exports = router;
-
-
