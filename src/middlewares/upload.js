@@ -1,4 +1,3 @@
-const AWS = require('aws-sdk');
 const multer = require('multer');
 
 // Configuración de Multer para almacenamiento en memoria
