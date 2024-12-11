@@ -13,3 +13,5 @@ router.get('/profile', usersController.getUserProfile);
 router.put('/profile', upload.single('profile_picture'), usersController.updateUserProfile);
 
 module.exports = router;
+
+
