@@ -1,9 +1,5 @@
 const diagnosesModel = require('../models/diagnosesModel');
 const axios = require('axios');
-
-const fs = require('fs');
-const path = require('path');
-const { v4: uuidv4 } = require('uuid');
 const fetch = require('node-fetch'); // Para realizar la descarga de la imagen
 const FormData = require('form-data');
 
@@ -42,37 +38,69 @@ exports.createDiagnosis = async (req, res) => {
 
     // Crea el objeto FormData para enviar la imagen al API de clasificación
     const formData = new FormData();
-    formData.append('file', imageBuffer, 'uploaded_image.jpg'); // Agrega la imagen como archivo
+    formData.append('file', imageBuffer, 'uploaded_image.jpg');
 
-    // Llama al API externo para obtener el diagnóstico
-    const diagnosisResult = await axios.post('http://101.44.9.199:8000/predict', formData, {
+    // Llama al API externo para obtener el diagnóstico de detección de la roya en la imagen
+    const classificationResult = await axios.post(process.env.CLASSIFICATION_API, formData, {
       headers: {
-        ...formData.getHeaders(), // Headers generados por FormData
+        ...formData.getHeaders(),
       },
     });
 
-    // Procesa la respuesta del API
-    console.log('Resultado del diagnóstico:', diagnosisResult.data);
-      
-    const { class_number, class_label } = diagnosisResult.data;
-    const diagnosis_report = `La imagen fue clasificada como: ${class_label}`;
-    const infection_percentage = Math.random() * 100; // Simulación temporal
+    console.log(classificationResult.data);
+
+    const { class_number, class_label } = classificationResult.data;
+    let diagnosis_report = `La imagen fue clasificada como: ${class_label}`;
+    let severity_percentage = 0;
+    let severity_grade = 0;
+    let description = "El maíz no presenta la enfermedad de la roya";
+
+    // Solo ejecuta la segmentación si class_number es 1
+    if (class_number === 1) {
+      // Crea un nuevo FormData para la segmentación
+      const formData2 = new FormData();
+      formData2.append('file', imageBuffer, 'uploaded_image.jpg');
+
+      const segmentationResult = await axios.post(process.env.SEGMENTATION_API, formData2, {
+        headers: {
+          ...formData2.getHeaders(),
+        },
+      });
+
+      console.log(segmentationResult.data);
+
+      // Extrae los valores de segmentación
+      severity_percentage = segmentationResult.data.severity_percentage;
+      severity_grade = segmentationResult.data.severity_grade;
+      description = segmentationResult.data.description;
+
+      diagnosis_report += ` con un grado de severidad de ${severity_grade} y un porcentaje (${severity_percentage.toFixed(2)}%). ${description}`;
+    } else {
+      // Agrega información adicional si no hay roya
+      diagnosis_report += `. ${description}`;
+    }
 
     // Guarda el diagnóstico en la base de datos
     const diagnosis = {
       user_id,
       plant_id,
-      disease_id: class_number || null,
+      disease_id: class_number,
       image: imageUrl,
-      background_removed_image: null,
-      infection_percentage: infection_percentage.toFixed(2),
+      background_removed_image: severity_grade.toString(),
+      infection_percentage: severity_percentage.toFixed(2),
       diagnosis_report,
       created_at: new Date(),
     };
 
     const result = await diagnosesModel.create(diagnosis);
 
-    res.status(201).json({ message: 'Diagnóstico creado exitosamente', id: result.insertId });
+    res.status(201).json({ 
+      message: 'Diagnóstico creado exitosamente',
+      id: result.insertId,
+      disease_id: diagnosis.disease_id,
+      infection_percentage: diagnosis.infection_percentage,
+      background_removed_image: diagnosis.background_removed_image
+    });
   } catch (error) {
     console.error('Error al crear el diagnóstico:', error);
     res.status(500).json({ message: 'Error procesando el diagnóstico', error });
