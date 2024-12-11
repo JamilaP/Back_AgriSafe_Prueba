@@ -7,6 +7,8 @@ const { v4: uuidv4 } = require('uuid');
 const fetch = require('node-fetch'); // Para realizar la descarga de la imagen
 const FormData = require('form-data');
 
+const { CLASSIFICATION_API } = process.env;
+
 // Obtener todos los diagnósticos asociados a un usuario
 exports.getDiagnosesByUserId = async (req, res) => {
   try {
@@ -45,7 +47,7 @@ exports.createDiagnosis = async (req, res) => {
     formData.append('file', imageBuffer, 'uploaded_image.jpg'); // Agrega la imagen como archivo
 
     // Llama al API externo para obtener el diagnóstico
-    const diagnosisResult = await axios.post('http://101.44.9.199:8000/predict', formData, {
+    const diagnosisResult = await axios.post('CLASSIFICATION_API', formData, {
       headers: {
         ...formData.getHeaders(), // Headers generados por FormData
       },
