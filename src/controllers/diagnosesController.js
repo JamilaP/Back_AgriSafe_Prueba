@@ -3,23 +3,6 @@ const axios = require('axios');
 const fetch = require('node-fetch'); // Para realizar la descarga de la imagen
 const FormData = require('form-data');
 
-// Obtener todos los diagnósticos asociados a un usuario
-exports.getDiagnosesByUserId = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const [diagnoses] = await diagnosesModel.findByUserId(userId);
-
-    if (!diagnoses.length) {
-      return res.status(404).json({ message: 'No se encontraron diagnósticos para este usuario' });
-    }
-
-    res.status(200).json(diagnoses);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Error al obtener los diagnósticos del usuario' });
-  }
-};
-
 // Crear un nuevo diagnóstico
 exports.createDiagnosis = async (req, res) => {
   try {
@@ -126,5 +109,39 @@ exports.deleteMultipleDiagnoses = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error al eliminar los diagnósticos' });
+  }
+};
+
+// Obtener todos los diagnósticos asociados a un usuario
+exports.getDiagnosesByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const [diagnoses] = await diagnosesModel.findByUserId(userId);
+
+    if (!diagnoses.length) {
+      return res.status(404).json({ message: 'No se encontraron diagnósticos para este usuario' });
+    }
+
+    res.status(200).json(diagnoses);
+  } catch (err) {
+    console.error('Error al obtener los diagnósticos del usuario:', err);
+    res.status(500).json({ error: 'Error al obtener los diagnósticos del usuario' });
+  }
+};
+
+// Obtener un diagnóstico específico por su ID
+exports.getDiagnosisById = async (req, res) => {
+  try {
+    const { diagnosisId } = req.params;
+    const [diagnosis] = await diagnosesModel.findById(diagnosisId);
+
+    if (!diagnosis) {
+      return res.status(404).json({ message: 'Diagnóstico no encontrado' });
+    }
+
+    res.status(200).json(diagnosis);
+  } catch (err) {
+    console.error('Error al obtener el diagnóstico:', err);
+    res.status(500).json({ error: 'Error al obtener el diagnóstico' });
   }
 };
