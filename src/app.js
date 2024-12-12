@@ -8,7 +8,7 @@ const app = express();
 
 // Configuración de CORS
 const corsOptions = {
-  origin: process.env.CLIENT_ORIGIN || 'http://192.168.18.221:8081',
+  origin: process.env.CLIENT_ORIGIN,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
@@ -30,5 +30,5 @@ app.use((err, req, res, next) => {
 // Iniciar el servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Servidor corriendo en http://192.168.18.221:${PORT}`);
+  console.log(`Servidor corriendo en http://10.101.63.228:${PORT}`);
 });
